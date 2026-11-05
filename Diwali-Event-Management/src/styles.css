@@ -474,6 +474,13 @@ textarea:focus-visible {
   text-decoration: underline;
   padding: 8px;
 }
+.presents {
+  display: block;
+  font-size: 0.45em;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
 .footer {
   text-align: center;
   color: #e5bcd8;
@@ -624,4 +631,11 @@ textarea:focus-visible {
   }
 }
 
-@media (max-width: 420px) { .wheeltext { width: 60px; } .wheeltext small { font-size: 9px; } }
+@media (max-width: 420px) {
+  .wheeltext {
+    width: 60px;
+  }
+  .wheeltext small {
+    font-size: 9px;
+  }
+}

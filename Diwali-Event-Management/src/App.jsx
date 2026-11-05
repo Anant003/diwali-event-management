@@ -38,30 +38,39 @@ const activities = [
   { name: "Rap", emoji: "🎧", detail: "Perform a short rap." },
   { name: "Dialog", emoji: "🎭", detail: "Deliver a famous movie dialogue." },
   { name: "Mimic", emoji: "🤪", detail: "Mimic a celebrity or character." },
-  { name: "Dare", emoji: "🔥", detail: "Complete a fun dare given by the host." },
-  { name: "Rapid Fire", emoji: "⚡", detail: "Answer quick questions from the host." }
+  {
+    name: "Dare",
+    emoji: "🔥",
+    detail: "Complete a fun dare given by the host.",
+  },
+  {
+    name: "Rapid Fire",
+    emoji: "⚡",
+    detail: "Answer quick questions from the host.",
+  },
 ];
 
 const levelData = [
   {
-    name: "Patakha Spin Dhamaka",
+    name: "Chakravyuh",
     emoji: "🎡",
-    sub: "Individual activity spinner",
+    sub: "Individual Activity Spinner",
     hosts: "Amey & Shubham",
   },
   {
-    name: "Filmy Phuljhadi Hungama",
+    name: "WTF – What the Film?",
     emoji: "🎬",
-    sub: "Team formation, dialogue and emoji movie guessing",
+    sub: "Team Games – Dialogue & Emoji Movie Guessing",
     hosts: "Sagar N & Pravalika",
   },
   {
-    name: "KYC — Know Your Colleague",
+    name: "KYC – Know Your Colleague",
     emoji: "🕵️",
     sub: "Two Truths and One Lie",
     hosts: "Anant & Radha",
   },
 ];
+
 const emptyTeams = () =>
   names.map((name, i) => ({ name, members: [], score: 0, id: i }));
 function useSaved(key, initial) {
@@ -126,9 +135,10 @@ function Header({ level }) {
     <header className="header">
       <div className="topglow">🪔 ✨ 🎇 ✨ 🪔</div>
       <h1>
-        Tekvision <span>Diwali</span> celebration
+        <small className="presents">Tekvision Present's</small>
+        <span>Diwali</span> Celebration
       </h1>
-      <p>Lights, laughter and a whole lot of team dhamaka!</p>
+      <p>Lights • Laughter • Team Spirit • Fun for Everyone!</p>
       <div className="levelheading">
         <span className="bigemoji" aria-hidden="true">
           {levelData[level].emoji}
@@ -144,17 +154,29 @@ function Header({ level }) {
     </header>
   );
 }
-const wheelColors = ["#b82c80", "#f3a92c", "#4d2eac", "#0f8f93", "#e45746", "#24864e"];
+const wheelColors = [
+  "#b82c80",
+  "#f3a92c",
+  "#4d2eac",
+  "#0f8f93",
+  "#e45746",
+  "#24864e",
+];
 
 function SpinWheel({ items, spinToken, caption }) {
   const count = Math.max(items.length, 1);
   const slice = 360 / count;
   const gradient = `conic-gradient(from -90deg, ${items
-    .map((_, i) => `${wheelColors[i % wheelColors.length]} ${i * slice}deg ${(i + 1) * slice}deg`)
+    .map(
+      (_, i) =>
+        `${wheelColors[i % wheelColors.length]} ${i * slice}deg ${(i + 1) * slice}deg`,
+    )
     .join(", ")})`;
   return (
     <div className="wheelwrap">
-      <div className="pointer" aria-hidden="true">▼</div>
+      <div className="pointer" aria-hidden="true">
+        ▼
+      </div>
       <div
         className="wheel"
         style={{ "--spin": `${spinToken}deg`, background: gradient }}
@@ -162,7 +184,7 @@ function SpinWheel({ items, spinToken, caption }) {
       >
         <div className="wheelface">
           {items.map((item, i) => {
-            const angle = (-90 + (i + 0.5) * slice) * Math.PI / 180;
+            const angle = ((-90 + (i + 0.5) * slice) * Math.PI) / 180;
             return (
               <div
                 className="wheeltext"
@@ -173,7 +195,9 @@ function SpinWheel({ items, spinToken, caption }) {
                 }}
               >
                 <span className="wheelEmoji">{item.emoji}</span>
-                {count <= 6 && item.name && <small className="wheelName">{item.name}</small>}
+                {count <= 6 && item.name && (
+                  <small className="wheelName">{item.name}</small>
+                )}
               </div>
             );
           })}
@@ -417,9 +441,7 @@ function LevelTwo() {
         <div className="sectionhead">
           <div>
             <h3>🎡 Team Formation Spinner</h3>
-            <p className="muted">
-              13 players → 4 teams.
-            </p>
+            <p className="muted">13 players → 4 teams.</p>
           </div>
           <button className="secondary" onClick={reset}>
             <RotateCcw size={15} /> Reset teams
@@ -668,10 +690,7 @@ function LevelThree() {
   });
 
   const [active, setActive] = useState(0);
-  const [completed, setCompleted] = useSaved(
-    "tekvision-kyc-completed",
-    []
-  );
+  const [completed, setCompleted] = useSaved("tekvision-kyc-completed", []);
   const [reveal, setReveal] = useState(false);
   const [text, setText] = useState("");
 
@@ -679,7 +698,7 @@ function LevelThree() {
 
   // Count only valid Level 3 participants
   const completedCount = levelThreeRoster.filter((name) =>
-    completed.includes(name)
+    completed.includes(name),
   ).length;
 
   function choose(i) {
@@ -723,9 +742,8 @@ function LevelThree() {
           <h2>{selected}</h2>
 
           <p>
-            Hosts read three statements from the Google Form:
-            two true statements and one lie. Teams guess
-            which one is the lie.
+            Hosts read three statements from the Google Form: two true
+            statements and one lie. Teams guess which one is the lie.
           </p>
         </div>
 
@@ -744,27 +762,18 @@ function LevelThree() {
         />
 
         <div className="actionrow">
-          <button
-            className="secondary"
-            onClick={() => setReveal((x) => !x)}
-          >
-            {reveal
-              ? "Hide answer"
-              : "Reveal / Discuss answer"}
+          <button className="secondary" onClick={() => setReveal((x) => !x)}>
+            {reveal ? "Hide answer" : "Reveal / Discuss answer"}
           </button>
 
           <button
             className="primary"
             onClick={() => {
               setCompleted((x) =>
-                x.includes(selected)
-                  ? x
-                  : [...x, selected]
+                x.includes(selected) ? x : [...x, selected],
               );
 
-              choose(
-                (active + 1) % levelThreeRoster.length
-              );
+              choose((active + 1) % levelThreeRoster.length);
             }}
           >
             Mark Done &amp; Next <ArrowRight size={16} />
@@ -773,14 +782,14 @@ function LevelThree() {
 
         {reveal && (
           <p className="notice" role="status">
-            Ask the colleague to reveal which statement
-            was the lie. The app does not invent their answers.
+            Ask the colleague to reveal which statement was the lie. The app
+            does not invent their answers.
           </p>
         )}
 
         <p className="muted">
-          Progress: {completedCount} of{" "}
-          {levelThreeRoster.length} colleagues completed.
+          Progress: {completedCount} of {levelThreeRoster.length} colleagues
+          completed.
         </p>
 
         <button
