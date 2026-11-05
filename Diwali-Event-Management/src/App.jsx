@@ -12,6 +12,7 @@ import {
   Plus,
   Trash2,
 } from "lucide-react";
+import "./level3.css";
 
 const visualImpairment = ["Siddhant", "Sagar B", "Renuka", "Archana"];
 const sighted = [
@@ -73,6 +74,7 @@ const levelData = [
 
 const emptyTeams = () =>
   names.map((name, i) => ({ name, members: [], score: 0, id: i }));
+
 function useSaved(key, initial) {
   const [value, setValue] = useState(() => {
     try {
@@ -89,6 +91,7 @@ function useSaved(key, initial) {
   }, [key, value]);
   return [value, setValue];
 }
+
 function shuffle(a) {
   const b = [...a];
   for (let i = b.length - 1; i > 0; i--) {
@@ -97,6 +100,7 @@ function shuffle(a) {
   }
   return b;
 }
+
 function Modal({ title, children, onClose }) {
   const closeRef = useRef(null);
   useEffect(() => {
@@ -130,12 +134,13 @@ function Modal({ title, children, onClose }) {
     </div>
   );
 }
+
 function Header({ level }) {
   return (
     <header className="header">
       <div className="topglow">🪔 ✨ 🎇 ✨ 🪔</div>
       <h1>
-        <small className="presents">Tekvision Present's</small>
+        <small className="presents">Tekvision Presents</small>
         <span>Diwali</span> Celebration
       </h1>
       <p>Lights • Laughter • Team Spirit • Fun for Everyone!</p>
@@ -154,6 +159,7 @@ function Header({ level }) {
     </header>
   );
 }
+
 const wheelColors = [
   "#b82c80",
   "#f3a92c",
@@ -166,12 +172,14 @@ const wheelColors = [
 function SpinWheel({ items, spinToken, caption }) {
   const count = Math.max(items.length, 1);
   const slice = 360 / count;
-  const gradient = `conic-gradient(from -90deg, ${items
-    .map(
-      (_, i) =>
-        `${wheelColors[i % wheelColors.length]} ${i * slice}deg ${(i + 1) * slice}deg`,
-    )
-    .join(", ")})`;
+  const gradient = items.length
+    ? `conic-gradient(from -90deg, ${items
+        .map(
+          (_, i) =>
+            `${wheelColors[i % wheelColors.length]} ${i * slice}deg ${(i + 1) * slice}deg`,
+        )
+        .join(", ")})`
+    : wheelColors[0];
   return (
     <div className="wheelwrap">
       <div className="pointer" aria-hidden="true">
@@ -327,9 +335,6 @@ function LevelOne() {
             <p>Spin the wheel to reveal the next activity!</p>
           )}
         </div>
-        {/* <p className="muted">
-          Activities are never removed or disabled after selection.
-        </p> */}
       </section>
       {flash && result && (
         <Modal
@@ -343,7 +348,10 @@ function LevelOne() {
     </div>
   );
 }
+
 function LevelTwo() {
+  const [players, setPlayers] = useSaved("tekvision-level2-players", roster);
+  const [newName, setNewName] = useState("");
   const [teams, setTeams] = useSaved("tekvision-level2-teams", emptyTeams());
   const [pending, setPending] = useState([]);
   const [drawn, setDrawn] = useState([]);
@@ -359,11 +367,11 @@ function LevelTwo() {
   const [notice, setNotice] = useState("");
   const timer = useRef(null);
   useEffect(() => () => clearTimeout(timer.current), []);
+
   const assigned = teams.flatMap((t) => t.members);
-  const remaining = roster.filter((p) => !assigned.includes(p));
-  const complete =
-    remaining.length === 0 &&
-    teams.every((t) => t.members.some((m) => visualImpairment.includes(m)));
+  const remaining = players.filter((p) => !assigned.includes(p));
+  const complete = remaining.length === 0 && players.length > 0;
+
   function reset() {
     if (!window.confirm("Reset team assignments, scores and round history?"))
       return;
@@ -376,6 +384,28 @@ function LevelTwo() {
     setTiebreak(false);
     setNotice("Team formation reset.");
   }
+
+  function addPlayer(e) {
+    e.preventDefault();
+    const name = newName.trim();
+    if (!name) return;
+    if (players.includes(name)) {
+      setNotice(`${name} is already in the list.`);
+      return;
+    }
+    setPlayers([...players, name]);
+    setNewName("");
+    setNotice(`${name} added.`);
+  }
+
+  function removePlayer(p) {
+    setPlayers(players.filter((x) => x !== p));
+    setTeams((ts) =>
+      ts.map((t) => ({ ...t, members: t.members.filter((m) => m !== p) })),
+    );
+    setNotice(`${p} removed.`);
+  }
+
   function draw() {
     if (forming || !remaining.length) return;
     setForming(true);
@@ -411,6 +441,7 @@ function LevelTwo() {
       setForming(false);
     }, 2100);
   }
+
   function award(points) {
     const name = teams[active].name;
     setTeams((ts) =>
@@ -428,29 +459,70 @@ function LevelTwo() {
     setAnswer("");
     setNotice(`${points} points awarded to ${name}.`);
   }
+
   function next() {
     setActive((x) => (x + 1) % 4);
     setNotice("Moved to the next team.");
   }
+
   const highest = Math.max(...teams.map((t) => t.score));
   const leaders = teams.filter((t) => t.score === highest);
   const resultReady = roundLog.length > 0;
+
   return (
     <div className="leveltwo">
       <section className="panel wide">
         <div className="sectionhead">
           <div>
             <h3>🎡 Team Formation Spinner</h3>
-            <p className="muted">13 players → 4 teams.</p>
+            <p className="muted">{players.length} players → 4 teams.</p>
           </div>
           <button className="secondary" onClick={reset}>
             <RotateCcw size={15} /> Reset teams
           </button>
         </div>
+
+        <details className="managePlayers">
+          <summary>
+            <Users size={16} aria-hidden="true" /> Manage players (
+            {players.length})
+          </summary>
+          <div className="managePlayersBody">
+            <form className="inlineform" onSubmit={addPlayer}>
+              <label className="sr-only" htmlFor="newteamplayer">
+                Add player
+              </label>
+              <input
+                id="newteamplayer"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder="Add player"
+              />
+              <button className="smallbutton" aria-label="Add player">
+                <Plus size={18} />
+              </button>
+            </form>
+            <ul className="playerchips">
+              {players.map((p) => (
+                <li key={p}>
+                  <span>{p}</span>
+                  <button
+                    className="iconbutton"
+                    onClick={() => removePlayer(p)}
+                    aria-label={`Remove ${p}`}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </details>
+
         <div className="formation">
           <div className="formationwheel">
             <SpinWheel
-              items={roster.map((p, i) => ({
+              items={players.map((p, i) => ({
                 emoji: ["🪔", "🎇", "✨", "🎆"][i % 4],
               }))}
               spinToken={formationSpin}
@@ -469,18 +541,13 @@ function LevelTwo() {
             </button>
           </div>
           <div className="teamcards">
-            {teams.map((t, i) => (
+            {teams.map((t) => (
               <article className="teamcard" key={t.id}>
                 <h4>{t.name}</h4>
                 <p>{t.members.length} members</p>
                 <ul>
                   {t.members.map((m) => (
-                    <li key={m}>
-                      {m}{" "}
-                      {visualImpairment.includes(m) && (
-                        <span className="muted"></span>
-                      )}
-                    </li>
+                    <li key={m}>{m}</li>
                   ))}
                 </ul>
               </article>
@@ -490,10 +557,11 @@ function LevelTwo() {
         <p role="status" aria-live="polite" className="notice">
           {notice ||
             (complete
-              ? "All 13 players have been assigned to four balanced teams."
+              ? `All ${players.length} players have been assigned to four teams.`
               : "Spin to assign participants.")}
         </p>
       </section>
+
       <div className="roundgrid">
         <section className="panel">
           <h3>🎬 Movie Guessing — 2 Rounds</h3>
@@ -595,6 +663,7 @@ function LevelTwo() {
             </button>
           </div>
         </section>
+
         <section className="panel">
           <h3>🏆 Live Scoreboard</h3>
           <ol className="scorelist">
@@ -681,30 +750,273 @@ function LevelTwo() {
   );
 }
 
-function LevelThree() {
-  // Level 3 participants only
-  const levelThreeRoster = roster.map((name) => {
+// ---------- Level 3: Google Sheet helpers ----------
+
+function parseCSV(text) {
+  const rows = [];
+  let row = [];
+  let field = "";
+  let quoted = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (quoted) {
+      if (c === '"') {
+        if (text[i + 1] === '"') {
+          field += '"';
+          i++;
+        } else quoted = false;
+      } else field += c;
+    } else if (c === '"') quoted = true;
+    else if (c === ",") {
+      row.push(field);
+      field = "";
+    } else if (c === "\n" || c === "\r") {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(field);
+      rows.push(row);
+      row = [];
+      field = "";
+    } else field += c;
+  }
+  if (field || row.length) {
+    row.push(field);
+    rows.push(row);
+  }
+  return rows.filter((r) => r.some((x) => x.trim()));
+}
+
+// Finds the columns by their header text, so the sheet's column order
+// doesn't matter. Needs: a "name" column, three "statement" columns and
+// a "lie" column. The lie can be written as 1/2/3, "Statement 2",
+// or the exact text of the lie.
+function sheetToColleagues(text) {
+  if (text.trim().startsWith("<")) {
+    throw new Error(
+      "That link returned a web page, not CSV. Use File → Share → Publish to web → CSV, or upload a downloaded CSV.",
+    );
+  }
+  const [header, ...body] = parseCSV(text);
+  if (!header) throw new Error("The sheet is empty.");
+  const h = header.map((x) => x.toLowerCase().trim());
+  const lieCol = h.findIndex((x) => /\blie\b/.test(x));
+  const nameCol = h.findIndex((x, i) => i !== lieCol && x.includes("name"));
+  const statementCols = h
+    .map((_, i) => i)
+    .filter(
+      (i) => i !== lieCol && i !== nameCol && /statement|truth|fact/.test(h[i]),
+    )
+    .slice(0, 3);
+  if (nameCol < 0 || lieCol < 0 || statementCols.length < 3) {
+    throw new Error(
+      `Couldn't match the columns. The sheet has: ${header.join(" | ")}. It needs a name column, three statement columns and a lie column.`,
+    );
+  }
+  const byName = new Map();
+  body.forEach((r) => {
+    const name = (r[nameCol] || "").trim();
+    if (!name) return;
+    const statements = statementCols.map((i) => (r[i] || "").trim());
+    const raw = (r[lieCol] || "").trim();
+    const digit = raw.match(/[1-3]/);
+    const lie = digit
+      ? Number(digit[0])
+      : statements.findIndex(
+          (s) => s && s.toLowerCase() === raw.toLowerCase(),
+        ) + 1;
+    // A later form submission from the same person replaces the earlier one.
+    byName.set(name, { name, statements, lie: lie || null });
+  });
+  return [...byName.values()];
+}
+
+const defaultColleagues = roster
+  .map((name) => {
     if (name === "Anant") return "Sagar N";
     if (name === "Radha") return "Pravalika";
     return name;
-  });
+  })
+  .map((name) => ({ name, statements: ["", "", ""], lie: null }));
 
+const KYC_POINTS = 10;
+
+function LevelThree() {
+  const [colleagues, setColleagues] = useSaved(
+    "tekvision-kyc-colleagues",
+    defaultColleagues,
+  );
+  // results[colleagueName] = { revealed: bool, correct: [names who guessed right] }
+  const [results, setResults] = useSaved("tekvision-kyc-individual", {});
+  const [sheetUrl, setSheetUrl] = useSaved("tekvision-kyc-sheet-url", "");
   const [active, setActive] = useState(0);
-  const [completed, setCompleted] = useSaved("tekvision-kyc-completed", []);
-  const [reveal, setReveal] = useState(false);
-  const [text, setText] = useState("");
+  const [newName, setNewName] = useState("");
+  const [notice, setNotice] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showFinal, setShowFinal] = useState(false);
 
-  const selected = levelThreeRoster[active];
+  const index = Math.min(active, Math.max(colleagues.length - 1, 0));
+  const current = colleagues[index];
+  const result = (current && results[current.name]) || {
+    revealed: false,
+    correct: [],
+  };
+  const correct = result.correct || [];
+  const hasStatements = current?.statements.every((s) => s.trim());
+  // Everyone except the colleague whose statements are being guessed
+  const guessers = colleagues.filter((c) => c.name !== current?.name);
 
-  // Count only valid Level 3 participants
-  const completedCount = levelThreeRoster.filter((name) =>
-    completed.includes(name),
-  ).length;
+  const scores = colleagues
+    .map((p) => ({
+      name: p.name,
+      points: colleagues.reduce((sum, c) => {
+        const r = results[c.name];
+        return r?.revealed && (r.correct || []).includes(p.name)
+          ? sum + KYC_POINTS
+          : sum;
+      }, 0),
+    }))
+    .sort((a, b) => b.points - a.points || a.name.localeCompare(b.name));
+  const top = scores[0]?.points ?? 0;
+  const finalWinners = scores.filter((p) => p.points === top && top > 0);
+  const doneCount = colleagues.filter((c) => results[c.name]?.revealed).length;
 
+  // ----- loading -----
+  function applyImport(list, source) {
+    if (!list.length) {
+      setNotice(`No rows with a name were found in the ${source}.`);
+      return;
+    }
+    setColleagues(list);
+    setActive(0);
+    const missingLie = list.filter((c) => !c.lie).map((c) => c.name);
+    setNotice(
+      `Loaded ${list.length} colleagues from the ${source}.` +
+        (missingLie.length
+          ? ` No lie found for: ${missingLie.join(", ")}. Fix it in the sheet and reload.`
+          : ""),
+    );
+  }
+
+  async function loadFromUrl(e) {
+    e.preventDefault();
+    if (!sheetUrl.trim()) return;
+    setLoading(true);
+    setNotice("Loading sheet…");
+    try {
+      const res = await fetch(sheetUrl.trim());
+      if (!res.ok) throw new Error(`The sheet returned error ${res.status}.`);
+      applyImport(sheetToColleagues(await res.text()), "sheet");
+    } catch (err) {
+      setNotice(
+        err.message === "Failed to fetch"
+          ? "Couldn't reach the sheet. Check it's published to the web as CSV, or upload a CSV file instead."
+          : err.message,
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function loadFromFile(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        applyImport(sheetToColleagues(String(reader.result)), "file");
+      } catch (err) {
+        setNotice(err.message);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  }
+
+  // ----- colleague list -----
+  function addColleague(e) {
+    e.preventDefault();
+    const name = newName.trim();
+    if (!name) return;
+    if (colleagues.some((c) => c.name === name)) {
+      setNotice(`${name} is already in the list.`);
+      return;
+    }
+    setColleagues([
+      ...colleagues,
+      { name, statements: ["", "", ""], lie: null },
+    ]);
+    setNewName("");
+    setNotice(`${name} added. Add their statements in the sheet and reload.`);
+  }
+
+  function removeColleague(name) {
+    const i = colleagues.findIndex((c) => c.name === name);
+    setColleagues(colleagues.filter((c) => c.name !== name));
+    // Drop their own round and any points they earned in other rounds
+    setResults((r) => {
+      const { [name]: _, ...rest } = r;
+      Object.keys(rest).forEach((k) => {
+        rest[k] = {
+          ...rest[k],
+          correct: (rest[k].correct || []).filter((n) => n !== name),
+        };
+      });
+      return rest;
+    });
+    if (i < index || index === colleagues.length - 1)
+      setActive(Math.max(index - 1, 0));
+    setNotice(`${name} removed.`);
+  }
+
+  // ----- game -----
   function choose(i) {
     setActive(i);
-    setReveal(false);
-    setText("");
+    setNotice("");
+  }
+
+  function saveResult(patch) {
+    setResults((r) => ({
+      ...r,
+      [current.name]: { ...result, correct, ...patch },
+    }));
+  }
+
+  function reveal() {
+    if (!hasStatements || !current.lie) {
+      setNotice(
+        `${current.name} doesn't have all three statements and a lie yet. Fix it in the sheet and reload.`,
+      );
+      return;
+    }
+    saveResult({ revealed: true });
+    setNotice(
+      `The lie was statement ${current.lie}. Tick everyone who guessed it right.`,
+    );
+  }
+
+  function undoReveal() {
+    saveResult({ revealed: false });
+    setNotice(`Reveal undone for ${current.name}.`);
+  }
+
+  function toggleCorrect(name) {
+    const on = correct.includes(name);
+    saveResult({
+      correct: on ? correct.filter((n) => n !== name) : [...correct, name],
+    });
+    setNotice(
+      on ? `${name}: points removed.` : `${name} +${KYC_POINTS} points.`,
+    );
+  }
+
+  function nextColleague() {
+    choose((index + 1) % colleagues.length);
+  }
+
+  function resetKyc() {
+    if (!window.confirm("Clear all KYC reveals and scores?")) return;
+    setResults({});
+    setShowFinal(false);
+    setNotice("KYC reveals and scores cleared.");
   }
 
   return (
@@ -712,95 +1024,233 @@ function LevelThree() {
       <section className="panel">
         <h3>👥 Colleague List</h3>
 
-        <p className="muted">
-          Hosts Anant and Radha select each colleague one by one.
-        </p>
+        <details className="managePlayers">
+          <summary>
+            <Users size={16} aria-hidden="true" /> Load from Google Sheet
+          </summary>
+          <div className="managePlayersBody">
+            <form className="inlineform" onSubmit={loadFromUrl}>
+              <label className="sr-only" htmlFor="sheeturl">
+                Published sheet CSV link
+              </label>
+              <input
+                id="sheeturl"
+                value={sheetUrl}
+                onChange={(e) => setSheetUrl(e.target.value)}
+                placeholder="Published CSV link"
+              />
+              <button className="smallbutton" disabled={loading}>
+                {loading ? "…" : "Load"}
+              </button>
+            </form>
+            <label htmlFor="sheetfile" className="kycfilelabel">
+              Or upload a CSV (File → Download → CSV)
+            </label>
+            <input
+              id="sheetfile"
+              type="file"
+              accept=".csv,text/csv"
+              onChange={loadFromFile}
+            />
+          </div>
+        </details>
+
+        <details className="managePlayers">
+          <summary>
+            <Users size={16} aria-hidden="true" /> Manage colleagues (
+            {colleagues.length})
+          </summary>
+          <div className="managePlayersBody">
+            <form className="inlineform" onSubmit={addColleague}>
+              <label className="sr-only" htmlFor="newcolleague">
+                Add colleague
+              </label>
+              <input
+                id="newcolleague"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder="Add colleague"
+              />
+              <button className="smallbutton" aria-label="Add colleague">
+                <Plus size={18} />
+              </button>
+            </form>
+            <ul className="playerchips">
+              {colleagues.map((c) => (
+                <li key={c.name}>
+                  <span>{c.name}</span>
+                  <button
+                    className="iconbutton"
+                    onClick={() => removeColleague(c.name)}
+                    aria-label={`Remove ${c.name}`}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </details>
 
         <div className="colleagues">
-          {levelThreeRoster.map((name, i) => (
+          {colleagues.map((c, i) => (
             <button
-              key={name}
-              className={active === i ? "current" : ""}
+              key={c.name}
+              className={index === i ? "current" : ""}
+              aria-current={index === i ? "true" : undefined}
               onClick={() => choose(i)}
             >
-              <span>{name}</span>
-
-              {completed.includes(name) && (
-                <Check size={16} aria-label="Completed" />
+              <span>{c.name}</span>
+              {results[c.name]?.revealed && (
+                <Check size={16} aria-label="Done" />
               )}
             </button>
           ))}
         </div>
+
+        <p className="muted">
+          Progress: {doneCount} of {colleagues.length} colleagues done.
+        </p>
       </section>
 
       <section className="panel">
-        <h3>🕵️ KYC — Two Truths and One Lie</h3>
+        <h3>🕵️ KYC – Two Truths and One Lie</h3>
 
-        <div className="resultbox">
-          <div className="largeemoji">🧐</div>
-          <p className="eyebrow">CURRENT COLLEAGUE</p>
-          <h2>{selected}</h2>
+        {!current ? (
+          <p>Add a colleague or load the sheet to start.</p>
+        ) : (
+          <>
+            <div className="resultbox">
+              <div className="largeemoji" aria-hidden="true">
+                🧐
+              </div>
+              <p className="eyebrow">CURRENT COLLEAGUE</p>
+              <h2>{current.name}</h2>
+            </div>
 
-          <p>
-            Hosts read three statements from the Google Form: two true
-            statements and one lie. Teams guess which one is the lie.
-          </p>
-        </div>
+            {hasStatements ? (
+              <ol className="kycstatements">
+                {current.statements.map((s, i) => {
+                  const isLie = result.revealed && current.lie === i + 1;
+                  const isTruth = result.revealed && current.lie !== i + 1;
+                  return (
+                    <li
+                      key={i}
+                      className={isLie ? "lie" : isTruth ? "truth" : ""}
+                    >
+                      <span className="kycnum">{i + 1}</span>
+                      <span className="kyctext">{s}</span>
+                      {isLie && <span className="kyctag">🤥 Lie</span>}
+                      {isTruth && <span className="kyctag">✓ Truth</span>}
+                    </li>
+                  );
+                })}
+              </ol>
+            ) : (
+              <p className="kycempty">
+                No statements yet for {current.name}. Load the sheet to add
+                them.
+              </p>
+            )}
 
-        <label htmlFor="statements">
-          Optional host notes (not connected to Google Forms)
-        </label>
+            <div className="actionrow">
+              {result.revealed ? (
+                <button className="secondary" onClick={undoReveal}>
+                  Undo reveal
+                </button>
+              ) : (
+                <button className="primary" onClick={reveal}>
+                  🎉 Reveal the lie
+                </button>
+              )}
+              <button className="secondary" onClick={nextColleague}>
+                Next colleague <ArrowRight size={16} />
+              </button>
+            </div>
 
-        <textarea
-          id="statements"
-          rows="5"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder={
-            "1. First statement\n2. Second statement\n3. Third statement"
-          }
-        />
+            <p className="notice" role="status" aria-live="polite">
+              {notice}
+            </p>
 
-        <div className="actionrow">
-          <button className="secondary" onClick={() => setReveal((x) => !x)}>
-            {reveal ? "Hide answer" : "Reveal / Discuss answer"}
-          </button>
+            {result.revealed && (
+              <fieldset className="correctlist">
+                <legend>Who guessed it right? (+{KYC_POINTS} each)</legend>
+                <div className="correctoptions">
+                  {guessers.map((p) => {
+                    const on = correct.includes(p.name);
+                    const id = `correct-${p.name.replace(/\W+/g, "-")}`;
+                    return (
+                      <label
+                        key={p.name}
+                        htmlFor={id}
+                        className={on ? "picked" : ""}
+                      >
+                        <input
+                          id={id}
+                          type="checkbox"
+                          checked={on}
+                          onChange={() => toggleCorrect(p.name)}
+                        />
+                        {p.name}
+                      </label>
+                    );
+                  })}
+                </div>
+              </fieldset>
+            )}
 
-          <button
-            className="primary"
-            onClick={() => {
-              setCompleted((x) =>
-                x.includes(selected) ? x : [...x, selected],
-              );
-
-              choose((active + 1) % levelThreeRoster.length);
-            }}
-          >
-            Mark Done &amp; Next <ArrowRight size={16} />
-          </button>
-        </div>
-
-        {reveal && (
-          <p className="notice" role="status">
-            Ask the colleague to reveal which statement was the lie. The app
-            does not invent their answers.
-          </p>
+            {result.revealed && (
+              <div className="kycwinners">
+                <h4>This round</h4>
+                {correct.length ? (
+                  <p>🎉 {correct.join(", ")} got it right!</p>
+                ) : (
+                  <p>Nobody yet. {current.name} is fooling everyone!</p>
+                )}
+              </div>
+            )}
+          </>
         )}
+      </section>
 
-        <p className="muted">
-          Progress: {completedCount} of {levelThreeRoster.length} colleagues
-          completed.
-        </p>
+      <section className="panel kycscore">
+        <h3>🏆 KYC Scoreboard</h3>
+        <ol className="scorelist">
+          {scores.map((p) => (
+            <li key={p.name}>
+              <span>{p.name}</span>
+              <strong>{p.points} pts</strong>
+            </li>
+          ))}
+        </ol>
 
         <button
-          className="linkbutton"
-          onClick={() => {
-            if (window.confirm("Clear KYC progress?")) {
-              setCompleted([]);
-            }
-          }}
+          className="primary"
+          onClick={() => setShowFinal((x) => !x)}
+          aria-expanded={showFinal}
         >
-          Reset KYC progress
+          {showFinal ? "Hide final winners" : "🏆 Show final winners"}
+        </button>
+
+        {showFinal && (
+          <div className="kycwinners" role="status">
+            {finalWinners.length === 0 ? (
+              <p>No points scored yet.</p>
+            ) : (
+              <>
+                <h4>
+                  {finalWinners.length === 1 ? "Winner" : "It's a tie"}
+                  {" – "}
+                  {top} points
+                </h4>
+                <p>🏆 {finalWinners.map((p) => p.name).join(", ")}</p>
+              </>
+            )}
+          </div>
+        )}
+
+        <button className="linkbutton" onClick={resetKyc}>
+          Reset KYC reveals and scores
         </button>
       </section>
     </div>

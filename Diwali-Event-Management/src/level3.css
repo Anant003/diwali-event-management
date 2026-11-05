@@ -1,0 +1,196 @@
+/* Level 3 – KYC. Every block sets its own text colour so nothing
+   inherits white text onto a light background. */
+
+.kycfilelabel {
+  display: block;
+  margin: 0.75rem 0 0.35rem;
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.kycstatements {
+  display: grid;
+  gap: 0.6rem;
+  margin: 1rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.kycstatements li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  background: #fff8e7;
+  color: #3b0a45; /* ~16:1 on cream */
+  font-size: 1.1rem;
+  line-height: 1.45;
+}
+
+.kycnum {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: #4d2eac;
+  color: #ffffff; /* ~8.5:1 */
+  font-weight: 700;
+}
+
+.kyctext {
+  flex: 1;
+}
+
+.kyctag {
+  flex-shrink: 0;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* Revealed states use a text tag + border, not colour alone */
+.kycstatements li.lie {
+  background: #fde8e6;
+  border-color: #b3261e;
+  color: #3b0a0a;
+}
+.kycstatements li.lie .kyctag {
+  background: #b3261e;
+  color: #ffffff; /* ~6.5:1 */
+}
+.kycstatements li.truth {
+  background: #e7f6ec;
+  border-color: #1d6b3a;
+  color: #0f2e1a;
+}
+.kycstatements li.truth .kyctag {
+  background: #1d6b3a;
+  color: #ffffff; /* ~6.6:1 */
+}
+
+.kycempty {
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 1px dashed rgba(255, 255, 255, 0.5);
+  color: #ffffff;
+}
+
+.correctlist {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.correctlist legend {
+  padding: 0 0.3rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.correctoptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.correctoptions label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0 0.85rem;
+  border-radius: 999px;
+  border: 2px solid #fff8e7;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.correctoptions input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #3b0a45;
+  cursor: pointer;
+}
+
+.correctoptions label.picked {
+  background: #f3a92c;
+  border-color: #f3a92c;
+  color: #2b0a33; /* ~9:1 on amber */
+}
+
+.correctoptions label:has(input:focus-visible) {
+  outline: 3px solid #f3a92c;
+  outline-offset: 3px;
+}
+
+.kycwinners {
+  margin: 1rem 0;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: #fff8e7;
+  color: #3b0a45;
+}
+
+.kycwinners h4 {
+  margin: 0 0 0.4rem;
+  color: #3b0a45;
+}
+
+.kycwinners ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.kycscore {
+  grid-column: 1 / -1;
+}
+
+.kycscore .scorelist {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.kycscore .scorelist li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+
+.kycscore .scorelist li:first-child:not(:only-child) {
+  border-color: #f3a92c;
+}
+
+.kycgrid .correctoptions label {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.kycgrid .correctoptions input {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.main {
+  padding-bottom: 7rem;
+}

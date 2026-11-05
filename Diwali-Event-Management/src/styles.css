@@ -463,6 +463,181 @@ textarea:focus-visible {
   padding: 10px;
   text-align: left;
 }
+.managePlayers {
+  margin: 0.75rem 0 1rem;
+  border: 1px solid rgba(184, 44, 128, 0.25);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.managePlayers > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.managePlayers > summary::-webkit-details-marker {
+  display: none;
+}
+
+.managePlayers > summary::after {
+  content: "▾";
+  margin-left: auto;
+  transition: transform 0.2s;
+}
+
+.managePlayers[open] > summary::after {
+  transform: rotate(180deg);
+}
+
+.managePlayers > summary:focus-visible {
+  outline: 3px solid #4d2eac;
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+
+.managePlayersBody {
+  padding: 0 0.9rem 0.9rem;
+}
+
+.managePlayersBody .inlineform {
+  max-width: 360px;
+}
+
+.playerchips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.playerchips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.3rem 0.2rem 0.7rem;
+  border-radius: 999px;
+  background: #fbeef6;
+  border: 1px solid rgba(184, 44, 128, 0.3);
+  font-size: 0.9rem;
+}
+
+.playerchips .iconbutton {
+  min-width: 28px;
+  min-height: 28px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .managePlayers > summary::after {
+    transition: none;
+  }
+}
+
+.managePlayers {
+  margin: 0.75rem 0 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.managePlayers > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  list-style: none;
+}
+
+.managePlayers > summary::-webkit-details-marker {
+  display: none;
+}
+
+.managePlayers > summary::after {
+  content: "▾";
+  margin-left: auto;
+  transition: transform 0.2s;
+}
+
+.managePlayers[open] > summary::after {
+  transform: rotate(180deg);
+}
+
+.managePlayers > summary:focus-visible {
+  outline: 3px solid #f3a92c;
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+
+.managePlayersBody {
+  padding: 0 0.9rem 0.9rem;
+}
+
+.managePlayersBody .inlineform {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 360px;
+}
+
+.managePlayersBody .inlineform .smallbutton {
+  height: 44px;
+  width: 44px;
+  flex-shrink: 0;
+}
+
+.playerchips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.playerchips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.3rem 0.2rem 0.75rem;
+  border-radius: 999px;
+  background: #fff8e7;
+  color: #3b0a45;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.playerchips .iconbutton {
+  min-width: 28px;
+  min-height: 28px;
+  border-radius: 50%;
+  background: transparent;
+  color: #8a1f5c;
+}
+
+.playerchips .iconbutton:hover {
+  background: #f6d9e8;
+}
+
+.playerchips .iconbutton:focus-visible {
+  outline: 3px solid #f3a92c;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .managePlayers > summary::after {
+    transition: none;
+  }
+}
 .colleagues button.current {
   background: #ffd27c;
   color: #321232;
